@@ -1,0 +1,2 @@
+module Kit::ProductsHelper
+end

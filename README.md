@@ -1,17 +1,24 @@
-mkdir newapp
+# README
 
-git clone https://github.com/YouraSilin/newapp.git newapp
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-cd newapp
+Things you may want to cover:
 
-docker compose build
+* Ruby version
 
-docker compose run --no-deps web rails new . --force --database=postgresql --css=bootstrap
+* System dependencies
 
-replace this file https://github.com/YouraSilin/newapp/blob/main/config/database.yml
+* Configuration
 
-docker compose up
+* Database creation
 
-docker compose exec web rake db:create db:migrate
+* Database initialization
 
-sudo chown -R $USER:$USER .
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...

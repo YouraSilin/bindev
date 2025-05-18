@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   db:
     image: postgres
@@ -11,7 +10,7 @@ services:
   web:
     build: .
     
-    command: bash -c "bundle && rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    command: ["bin/dev"]
     # command: tail -f /dev/null
     volumes:
       - .:/newapp

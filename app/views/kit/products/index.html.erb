@@ -1,0 +1,19 @@
+<%= turbo_frame_tag "products" do %>
+  <h1>Products</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th colspan="3">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody id="products-list">
+      <% @kit_products.each do |kit_product| %>
+    <%= render kit_product %>
+    <% end %>
+    </tbody>
+  </table>
+  <%= link_to 'New Product', new_kit_product_path, class: 'button' %>
+<% end %>
