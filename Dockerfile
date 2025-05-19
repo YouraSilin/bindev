@@ -17,6 +17,7 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
 # Set working directory and copy Gemfile for dependency installation
 WORKDIR /newapp
 COPY Gemfile Gemfile.lock ./
+RUN gem install bundler
 RUN bundle config set frozen false
 RUN bundle install
 
