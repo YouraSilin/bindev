@@ -1,19 +1,11 @@
 # syntax=docker/dockerfile:1
 FROM ruby:3.3.0
 
-# Rails app lives here
-WORKDIR /newapp
+# Install OS-level dependencies
+RUN apt-get update -qq && apt-get install --no-install-recommends -y \
+  build-essential curl git libpq-dev libvips node-gyp pkg-config npm yarn postgresql-client
 
-# Set development environment
-ENV RAILS_ENV="development" \
-BUNDLE_DEPLOYMENT="1" \
-BUNDLE_PATH="/usr/local/bundle" \
-BUNDLE_WITHOUT=""
-
-# Install packages needed to build gems and node modules
-RUN apt-get update -qq && apt-get install --no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config npm yarn postgresql-client
-
-# Install JavaScript dependencies
+# Install Node.js and Yarn
 ARG NODE_VERSION=24.0.2
 ARG YARN_VERSION=1.22.22
 ENV PATH=/usr/local/node/bin:$PATH
@@ -22,20 +14,31 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     npm install -g yarn@$YARN_VERSION && \
     rm -rf /tmp/node-build-master
 
-COPY Gemfile /newapp/Gemfile
-COPY Gemfile.lock /newapp/Gemfile.lock
-RUN yarn add bootstrap
+# Set working directory and copy Gemfile for dependency installation
+WORKDIR /newapp
+COPY Gemfile Gemfile.lock ./
+RUN bundle config set frozen false
 RUN bundle install
 
-# Install node modules
-COPY yarn.lock package.json ./
-RUN yarn install
+# Add JavaScript dependencies
+COPY package.json yarn.lock ./
+RUN yarn install && yarn add bootstrap
+
+# Copy the rest of the application code
+COPY . .
+
+# Set environment variables
+ENV RAILS_ENV="development" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT=""
 
 # Set directory ownership
 RUN chown -R $USER:$USER .
 
-# Add a script to be executed every time the container starts.
+# Add entrypoint script
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
+
 EXPOSE 3000
