@@ -1,8 +1,8 @@
 FROM ruby:3.3.0
 
 # Install OS-level dependencies
-RUN apt-get update -qq && apt-get install --no-install-recommends -y \
-  build-essential curl git libpq-dev libvips node-gyp pkg-config npm yarn postgresql-client
+RUN apt-get update -qq && apt-get install -y npm postgresql-client
+WORKDIR /newapp
 
 # Install Node.js and Yarn
 ARG NODE_VERSION=24.0.2
@@ -15,26 +15,26 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
 
 # Set working directory and copy Gemfile for dependency installation
 WORKDIR /newapp
-COPY Gemfile Gemfile.lock ./
-RUN gem install bundler
-RUN bundle config set frozen false
+COPY Gemfile /newapp/Gemfile
+COPY Gemfile.lock /newapp/Gemfile.lock
+RUN gem install bundler -v 2.4.15
 RUN bundle install
 
+# Cleanup cache
+RUN bundle clean --force \
+  && rm -rf /usr/local/bundle/cache/*.gem \
+  && find /usr/local/bundle/gems/ -name "*.c" -delete \
+  && find /usr/local/bundle/gems/ -name "*.o" -delete
+
 # Add JavaScript dependencies
-COPY package.json ./
+COPY package.json /newapp/package.json
 RUN yarn install && yarn add bootstrap
 
 # Copy the rest of the application code
 COPY . .
 
-# Set environment variables
-ENV RAILS_ENV="development" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT=""
-
 # Set directory ownership
-RUN chown -R $USER:$USER .
+RUN chown -R root:root /newapp
 
 # Add entrypoint script
 COPY entrypoint.sh /usr/bin/
