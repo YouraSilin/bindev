@@ -21,7 +21,7 @@ RUN bundle config set frozen false
 RUN bundle install
 
 # Add JavaScript dependencies
-COPY package.json yarn.lock ./
+COPY package.json ./
 RUN yarn install && yarn add bootstrap
 
 # Copy the rest of the application code
