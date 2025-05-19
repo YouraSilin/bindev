@@ -2,7 +2,6 @@ FROM ruby:3.3.0
 
 # Install OS-level dependencies
 RUN apt-get update -qq && apt-get install -y npm postgresql-client
-WORKDIR /newapp
 
 # Install Node.js and Yarn
 ARG NODE_VERSION=24.0.2
