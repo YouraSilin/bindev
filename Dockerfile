@@ -11,7 +11,7 @@ BUNDLE_PATH="/usr/local/bundle" \
 BUNDLE_WITHOUT=""
 
 # Install packages needed to build gems and node modules
-RUN apt-get update -qq && apt-get install -y -no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config npm yarn postgresql-client
+RUN apt-get update -qq && apt-get install --no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config npm yarn postgresql-client
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=24.0.2
